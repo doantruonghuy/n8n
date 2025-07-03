@@ -1,51 +1,53 @@
-Hướng dẫn này sẽ bao gồm các bước sau:
+**Hướng dẫn này sẽ bao gồm các bước sau:**
 
-Cập nhật hệ thống.
+1. Cập nhật hệ thống.
+2. Cài đặt Docker và Docker Compose.
+3. Cấu hình n8n với Docker Compose.
+4. Cấu hình Reverse Proxy (Nginx) với SSL (Let's Encrypt).
+5. Cấu hình n8n tự động khởi động.
 
-Cài đặt Docker và Docker Compose.
+**Yêu cầu:**
 
-Cấu hình n8n với Docker Compose.
+1. Một VPS chạy hệ điều hành Ubuntu 20.04.
+2. Quyền truy cập SSH (với người dùng có quyền sudo).
+3. Một tên miền đã trỏ về địa chỉ IP (103.211.200.39) của VPS của bạn (ví dụ: n8n.smartfix.vn). Nếu chưa có, bạn có thể bỏ qua bước cài đặt Nginx và SSL, nhưng nên cân nhắc cài đặt sau này để bảo mật.
 
-Cấu hình Reverse Proxy (Nginx) với SSL (Let's Encrypt).
+** Các bước thực hiện: **
 
-Cấu hình n8n tự động khởi động.
+**_Bước 1:_** Cập nhật hệ thống và cài đặt các gói cần thiết:
 
-Yêu cầu:
+1.1. Kết nối SSH vào VPS của bạn và chạy các lệnh sau để cập nhật hệ thống và cài đặt một số gói cần thiết:
 
-Một VPS chạy Ubuntu 20.04.
-
-Quyền truy cập SSH (với người dùng có quyền sudo).
-
-Một tên miền đã trỏ về địa chỉ IP của VPS của bạn (ví dụ: n8n.yourdomain.com). Nếu chưa có, bạn có thể bỏ qua bước cài đặt Nginx và SSL, nhưng nên cân nhắc cài đặt sau này để bảo mật.
-
-Bước 1: Cập nhật hệ thống và cài đặt các gói cần thiết
-Kết nối SSH vào VPS của bạn và chạy các lệnh sau để cập nhật hệ thống và cài đặt một số gói cần thiết:
-
-Bash
-
+```Bash```
+```
 sudo apt update
 sudo apt upgrade -y
 sudo apt install -y curl gnupg2 software-properties-common apt-transport-https ca-certificates
-Bước 2: Cài đặt Docker và Docker Compose
-2.1. Cài đặt Docker Engine
-Bash
+```
+***Bước 2:*** Cài đặt Docker và Docker Compose
 
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+2.1. Cài đặt Docker Engine:
+
+```Bash```
+
+```curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt update
 sudo apt install -y docker-ce docker-ce-cli containerd.io
-
-# Thêm người dùng hiện tại vào nhóm docker để không cần sudo khi chạy lệnh docker
-sudo usermod -aG docker ${USER}
+```
+```
+sudo usermod -aG docker ${USER} # Thêm người dùng hiện tại vào nhóm docker để không cần sudo khi chạy lệnh docker
+```
 
 # Khởi động lại phiên SSH để áp dụng thay đổi hoặc chạy lệnh sau
 # newgrp docker
-Kiểm tra xem Docker đã cài đặt thành công chưa:
 
-Bash
-
+2.3. Kiểm tra xem Docker đã cài đặt thành công chưa:
+```
+Bash```
+```
 docker run hello-world
-Nếu bạn thấy thông báo "Hello from Docker!", nghĩa là Docker đã cài đặt thành công.
+# Nếu bạn thấy thông báo "Hello from Docker!", nghĩa là Docker đã cài đặt thành công.
 
 2.2. Cài đặt Docker Compose
 Kiểm tra phiên bản Docker Compose mới nhất tại https://github.com/docker/compose/releases. Thay thế v2.20.2 bằng phiên bản mới nhất nếu có.
